@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "planportals"
+version = "0.1.0"
+description = "Evidence-preserving door and window attachment for floor-plan room graphs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+classifiers = ["Development Status :: 3 - Alpha", "Intended Audience :: Developers", "Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.12", "Topic :: Scientific/Engineering :: Image Processing"]
+dependencies = ["numpy>=1.26,<3", "Pillow>=10.1,<13"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1", "build>=1.2,<2"]
+
+[project.urls]
+Repository = "https://github.com/crown-sports/planportals"
+Issues = "https://github.com/crown-sports/planportals/issues"
+Documentation = "https://github.com/crown-sports/planportals/blob/main/README.md"
+
+[project.scripts]
+planportals = "planportals.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

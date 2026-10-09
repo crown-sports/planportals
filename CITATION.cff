@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, cite this repository and version."
+type: software
+title: "PlanPortals"
+authors:
+  - name: "PlanPortals contributors"
+version: 0.1.0
+date-released: 2026-10-09
+repository-code: "https://github.com/crown-sports/planportals"
+url: "https://github.com/crown-sports/planportals"
+license: MIT
+abstract: "Attach semantic openings to walls and rooms, and build a graph of supported door connections. No real datasets or model weights are distributed."

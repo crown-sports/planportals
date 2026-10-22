@@ -31,3 +31,16 @@ Review all source and archive members. Keep the public history independent of an
 Push the reviewed source, verify the exact commit in Python 3.10 and 3.12 CI, then tag it. Prepare a draft release, upload the three artifacts and checksums, verify uploaded digests and publish the experimental release. Test the wheel in a fresh environment before publication.
 
 Verify downloads with `sha256sum -c SHA256SUMS` on Linux, or `shasum -a 256 -c SHA256SUMS` on macOS. Install the wheel locally with pip. No automated dataset or model upload is configured.
+
+## v0.2.0 compatibility
+
+This release adds commands without changing the existing input/export schemas.
+Install the pinned tag with `python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.0"`,
+or use the matching release wheel. This is a GitHub experimental pre-release;
+no PyPI upload or pretrained-model download is configured.
+
+Build artifacts from a clean export of the exact reviewed release commit into a
+new output directory. Do not reuse a previous release's `dist/` files. Verify
+package metadata and imported `__version__` from the wheel in a fresh environment,
+then record SHA-256 checksums only for that version's wheel, sdist and audited
+source ZIP. Existing tags and assets retain their original contents.

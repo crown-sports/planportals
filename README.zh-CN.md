@@ -13,7 +13,7 @@
 Python 3.10 或更新版本，无需 GPU、模型或云服务。
 
 ```bash
-python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.1.0"
+python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 planportals demo --output runs/demo
 ```
 
@@ -55,3 +55,9 @@ python tools/release.py --check
 [贡献](CONTRIBUTING.md) · [安全报告](SECURITY.md) · [下载内容](docs/releasing.md)
 
 代码使用 MIT，只附一张程序生成的复合效果图。真实图纸、标注、数据集和模型权重不随项目发布。[来源说明](NOTICE.md)。
+
+## 关门场景与可达性
+
+v0.2.0 新增 `planportals access --graph runs/demo/portals.json --from-room bedroom --blocked-openings door-living-kitchen --output runs/access.json --fail-on-newly-isolated`。
+报告原始可达房间、关闭指定门后新增的孤立房间与剩余路线，保留原始几何和检测证据。
+门 ID 错误返回 2，新增孤立房间触发门禁返回 1；这不是疏散安全认证。

@@ -20,9 +20,9 @@ from .domain import (
     SideEvidence,
     WallSegment,
 )
-from .graph import build_graph, find_route
+from .graph import analyze_access, build_graph, find_route
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
     "AttachmentEvidence",
     "GraphConfig",
@@ -36,6 +36,7 @@ __all__ = [
     "SceneInput",
     "SideEvidence",
     "WallSegment",
+    "analyze_access",
     "build_graph",
     "find_route",
     "openings_from_mask",

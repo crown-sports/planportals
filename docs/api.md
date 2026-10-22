@@ -161,3 +161,14 @@ errors. Routes are undirected, shortest by number of accepted doors, and represe
 room sequences rather than collision-free paths. Loading graph JSON reconstructs its
 decisions and rejects tampered edges. API validation raises `ValueError`; CLI failures
 exit with code `2`, while a valid `no_path` result exits with code `0`.
+
+## Temporary closure scenarios
+
+`find_route(graph, from_room, to_room, blocked_opening_ids=("door-id",))` filters
+only the named accepted opening edges for this call; the graph stays unchanged. Unknown
+opening IDs raise even when the start and destination are the same room.
+`analyze_access(graph, from_room, blocked_opening_ids=("door-id",))` compares baseline
+and scenario reachability and returns remaining routes plus newly isolated room IDs.
+The CLI `access` command writes that report; `--fail-on-newly-isolated` returns 1 when
+newly isolated rooms exist. `route --fail-if-unreachable` similarly opts into exit 1.
+Invalid IDs and output paths that alias the input graph return 2.

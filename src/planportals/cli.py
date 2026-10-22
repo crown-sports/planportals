@@ -17,7 +17,7 @@ from .adapters import (
 )
 from .demo import demo_scene
 from .domain import COORDINATES, GraphConfig, SceneInput
-from .graph import build_graph, find_route
+from .graph import analyze_access, build_graph, find_route
 from .io import read_graph, read_json, read_labelmap, read_scene, save_graph, write_json
 
 
@@ -54,6 +54,16 @@ def parser() -> argparse.ArgumentParser:
     route.add_argument("--from-room", required=True)
     route.add_argument("--to-room", required=True)
     route.add_argument("--output", type=Path, help="optional route JSON file")
+    route.add_argument("--blocked-openings", nargs="+", default=[])
+    route.add_argument("--fail-if-unreachable", action="store_true")
+    access = commands.add_parser(
+        "access", help="Compare baseline and closure-scenario reachability"
+    )
+    access.add_argument("--graph", type=Path, required=True)
+    access.add_argument("--from-room", required=True)
+    access.add_argument("--blocked-openings", nargs="+", default=[])
+    access.add_argument("--output", type=Path, required=True)
+    access.add_argument("--fail-on-newly-isolated", action="store_true")
     demo = commands.add_parser("demo", help="generate an original annotated scene and its graph")
     demo.add_argument("--output", type=Path, required=True)
     return result
@@ -123,8 +133,25 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "build":
             result = _run_build(args)
-        elif args.command == "route":
-            result = find_route(read_graph(args.graph), args.from_room, args.to_room).to_dict()
+        elif args.command in {"route", "access"}:
+            if args.output and (
+                args.output.resolve() == args.graph.resolve()
+                or (
+                    args.output.exists()
+                    and args.graph.exists()
+                    and args.output.samefile(args.graph)
+                )
+            ):
+                raise ValueError("route/access output must not overwrite the graph")
+            graph = read_graph(args.graph)
+            blocked = tuple(args.blocked_openings)
+            if args.command == "route":
+                result = find_route(
+                    graph, args.from_room, args.to_room, blocked_opening_ids=blocked
+                ).to_dict()
+                result["blocked_opening_ids"] = sorted(set(blocked))
+            else:
+                result = analyze_access(graph, args.from_room, blocked_opening_ids=blocked)
             if args.output:
                 write_json(result, args.output)
         else:
@@ -143,6 +170,14 @@ def main(argv: list[str] | None = None) -> int:
                 "coordinates": dict(COORDINATES),
             }
         print(json.dumps(result, indent=2, allow_nan=False))
+        if args.command == "route" and args.fail_if_unreachable and result["status"] == "no_path":
+            return 1
+        if (
+            args.command == "access"
+            and args.fail_on_newly_isolated
+            and result["newly_isolated_room_ids"]
+        ):
+            return 1
         return 0
     except (ValueError, OSError, KeyError, TypeError) as error:
         arguments.exit(2, f"planportals: {error}\n")

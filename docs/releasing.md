@@ -4,7 +4,7 @@ PlanPortals is distributed through [GitHub Releases](https://github.com/crown-sp
 
 | Asset | Contents |
 | --- | --- |
-| `planportals-source.zip` | Explicitly audited source, docs, tests, CI and one code-generated composite figure |
+| `planportals-source.zip` | Explicitly audited source, docs, tests, CI and the explicitly listed generated figures |
 | `planportals-VERSION.tar.gz` | Python source distribution |
 | `planportals-VERSION-py3-none-any.whl` | Installable package and metadata; no figure, dataset or model |
 | `SHA256SUMS` | SHA256 checksums for those three assets |
@@ -26,7 +26,7 @@ python -m build
 python tools/release.py --output dist/planportals-source.zip
 ```
 
-Review all source and archive members. Keep the public history independent of any private application. The only image is `examples/demo.png`, an actual result rendered on code-generated geometry; do not add real images or per-case result files. Confirm the renderer's documented check scope, not just a visually attractive picture.
+Review all source and archive members. Keep the public history independent of any private application. The allowed images are `examples/demo.png` and `examples/workflow.png`; the former is an actual result rendered on code-generated geometry; do not add real images or per-case result files. Confirm the renderer's documented check scope, not just a visually attractive picture.
 
 Push the reviewed source, verify the exact commit in Python 3.10 and 3.12 CI, then tag it. Prepare a draft release, upload the three artifacts and checksums, verify uploaded digests and publish the experimental release. Test the wheel in a fresh environment before publication.
 
@@ -44,3 +44,5 @@ new output directory. Do not reuse a previous release's `dist/` files. Verify
 package metadata and imported `__version__` from the wheel in a fresh environment,
 then record SHA-256 checksums only for that version's wheel, sdist and audited
 source ZIP. Existing tags and assets retain their original contents.
+
+The additional `examples/workflow.png` is an original, data-driven figure from the shared generated walkthrough. Only the names in `PUBLIC_IMAGES` are allowed; all RGB, size and metadata checks still apply.

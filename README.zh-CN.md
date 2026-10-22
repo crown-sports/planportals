@@ -1,67 +1,53 @@
 # PlanPortals
 
-**沿着有依据的门连接房间，保留窗户和未知缺口的判断记录。**
+按门连接房间，再检查关掉一扇门后，哪些房间到不了了。
 
-面向已有房间几何和门窗类别证据的开发者。需要回答“关闭指定门后，哪些房间变得不可达”时，从这里开始。
+[English](README.md) · [v0.2.0](https://github.com/crown-sports/planportals/releases/tag/v0.2.0)
 
-[English](README.md) · [发布版本](https://github.com/crown-sports/planportals/releases)
+![关闭客厅与厨房之间的门后，厨房和书房变为不可达；卫生间前后均为灰色](examples/workflow.png)
 
-[四库选择与完整试用：测量、结构变化、封门](https://github.com/crown-sports/planportals/blob/main/docs/workflow.zh-CN.md) · [实现证据与产品边界](docs/product.md)
+生成示例：关闭客厅—厨房的门后，从卧室出发到不了**厨房和书房**；灰色卫生间原本就不可达。[运行这张示例](docs/workflow.zh-CN.md)。
 
-![生成户型图、门窗语义候选、实际房间连接与路线判断](examples/demo.png)
+## 先跑起来
 
-这张生成的五房间图，程序实际建立了 **3 条门连接**：卧室 → 客厅 → 厨房 → 书房可以连通；浴室只有窗与未知缺口，仍然无路。房间几何和带类别的开口候选是已提供的输入，项目不包含训练好的门窗识别模型。
-
-## 运行一下
-
-Python 3.10 或更新版本，无需 GPU、模型或云服务。
+Python 3.10+，不需要 GPU、模型或云服务。
 
 ```bash
 python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 planportals demo --output runs/demo
+planportals access --graph runs/demo/portals.json --from-room bedroom \
+  --blocked-openings door-living-kitchen --output runs/access.json \
+  --fail-on-newly-isolated
 ```
 
-查看 JSON 与 SVG 叠加图，每个开口保留采用、拒绝或不确定的依据。
+demo 提供五个房间和带类别的开口。打开 `runs/demo/portals.svg`，查看 **3 条被接受的门连接**。封门命令先写出 `access.json`，因新增两个不可达房间而退出 **1**，原始图和几何不会改变。
+
+门 ID 从图的 decisions 中读取；ID 错误或输入不合法时退出 **2**。`route` 也支持 `--blocked-openings` 和 `--fail-if-unreachable`。
+
+## 换成自己的房间和开口
 
 ```bash
 planportals build --input /private/scene.json --output runs/result
 ```
 
-可接自己的模型输出：原图尺寸的门窗语义标签图或开口线段；墙线来自 [WallGraph](https://github.com/crown-sports/wallgraph)，房间轮廓来自 [PlanRegions](https://github.com/crown-sports/planregions)。[输入格式、适配器与路线 API](docs/api.md)。
+提供房间多边形、墙段，以及标为门、窗或未知的开口。适配器可读取 [WallGraph](https://github.com/crown-sports/wallgraph) 墙线和 [PlanRegions](https://github.com/crown-sports/planregions) 房间输出，也支持对齐的语义标签图。[场景格式与 API](docs/api.md)。
 
-## 具体解决什么
+门要有墙体支撑，两侧房间判断也要一致，才会成为连接。窗户和未知缺口不进入路线图；被拒绝或有歧义的候选会在 `portals.json` 保留原因。[查看候选到连接图的效果](examples/demo.png)。
 
-| 输入证据 | 判断 |
-| --- | --- |
-| 门与墙段、两侧房间均明确 | 建立两房间之间的门连接 |
-| 窗户 | 保留关联，不生成门连接 |
-| 墙体预测中的未知缺口 | 保留未知，不猜成门 |
-| 多条墙竞争，或两侧采样房间不一致 | 保留候选，并说明歧义 |
-| 已有比例尺的门宽与宽度条件 | 检查给定阈值，报告是否满足 |
+## 怎么读结果
 
-路线输出是**房间和开口 ID 的序列**，不是家具间的无碰撞行走轨迹，也不替代无障碍或疏散评估。开口线段宽度是几何观测，不等于已核实的门净宽。
+`access.json` 会分开列出“原本就不可达”和“这次封门后才不可达”的房间。路线是房间 ID 与开口 ID 的序列；图中的连线表示邻接，不是绕过家具的行走轨迹。
 
-## 关门场景与可达性
+门的类别由上游提供，仓库没有附带检测器。上游标错类别，仍可能产生错误连接。几何开口宽度不是已核实的门净宽；路线报告不替代无障碍或疏散评估。[生成案例与失败情况](docs/validation.md)。
 
-v0.2.0 新增 `planportals access --graph runs/demo/portals.json --from-room bedroom --blocked-openings door-living-kitchen --output runs/access.json --fail-on-newly-isolated`。
-报告原始可达房间、关闭指定门后新增的孤立房间与剩余路线，保留原始几何和检测证据。
-门 ID 错误返回 2，新增孤立房间触发门禁返回 1；这不是疏散安全认证。
+## 四个库一起用
 
-## 技术与实测边界
+[完整示例](docs/workflow.zh-CN.md)从同一张生成户型图得到墙线、房间、面积、缺墙前后对照和封门报告。脚本从**当前 main 源码**获取，依赖引擎按指南安装已发布 tag。
 
-语义连通域 → 墙体支撑 → 两侧房间证据 → 保守连接判断 → 图搜索。每一步结果都可追查。[方法](docs/methods.md) · [架构](docs/architecture.md)。
+## 继续看
 
-生成对比包含窗户、未知缺口、几何错位和错误的上游类别。正确处理已提供候选不代表完整图片识别准确；把窗误标成门，仍可能造成错误连接。[实验与实际结果](docs/validation.md)。
+[实现说明](docs/product.md) · [API](docs/api.md) · [方法](docs/methods.md) · [架构](docs/architecture.md)
 
-## 开发
+[贡献](CONTRIBUTING.md) · [发布检查](docs/releasing.md) · [安全报告](SECURITY.md)
 
-```bash
-python -m pip install -e '.[dev]'
-pytest
-python tools/render_demo.py --check
-python tools/release.py --check
-```
-
-[贡献](CONTRIBUTING.md) · [安全报告](SECURITY.md) · [下载内容](docs/releasing.md)
-
-代码使用 MIT，只附一张程序生成的复合效果图。真实图纸、标注、数据集和模型权重不随项目发布。[来源说明](NOTICE.md)。
+代码与原创生成图使用 MIT 许可，不包含真实图纸、标注、数据集或模型权重。[来源说明](NOTICE.md)。

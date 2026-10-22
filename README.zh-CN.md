@@ -2,7 +2,11 @@
 
 **沿着有依据的门连接房间，保留窗户和未知缺口的判断记录。**
 
+面向已有房间几何和门窗类别证据的开发者。需要回答“关闭指定门后，哪些房间变得不可达”时，从这里开始。
+
 [English](README.md) · [发布版本](https://github.com/crown-sports/planportals/releases)
+
+[四库选择与完整试用：测量、结构变化、封门](https://github.com/crown-sports/planportals/blob/main/docs/workflow.zh-CN.md) · [实现证据与产品边界](docs/product.md)
 
 ![生成户型图、门窗语义候选、实际房间连接与路线判断](examples/demo.png)
 
@@ -37,6 +41,12 @@ planportals build --input /private/scene.json --output runs/result
 
 路线输出是**房间和开口 ID 的序列**，不是家具间的无碰撞行走轨迹，也不替代无障碍或疏散评估。开口线段宽度是几何观测，不等于已核实的门净宽。
 
+## 关门场景与可达性
+
+v0.2.0 新增 `planportals access --graph runs/demo/portals.json --from-room bedroom --blocked-openings door-living-kitchen --output runs/access.json --fail-on-newly-isolated`。
+报告原始可达房间、关闭指定门后新增的孤立房间与剩余路线，保留原始几何和检测证据。
+门 ID 错误返回 2，新增孤立房间触发门禁返回 1；这不是疏散安全认证。
+
 ## 技术与实测边界
 
 语义连通域 → 墙体支撑 → 两侧房间证据 → 保守连接判断 → 图搜索。每一步结果都可追查。[方法](docs/methods.md) · [架构](docs/architecture.md)。
@@ -55,9 +65,3 @@ python tools/release.py --check
 [贡献](CONTRIBUTING.md) · [安全报告](SECURITY.md) · [下载内容](docs/releasing.md)
 
 代码使用 MIT，只附一张程序生成的复合效果图。真实图纸、标注、数据集和模型权重不随项目发布。[来源说明](NOTICE.md)。
-
-## 关门场景与可达性
-
-v0.2.0 新增 `planportals access --graph runs/demo/portals.json --from-room bedroom --blocked-openings door-living-kitchen --output runs/access.json --fail-on-newly-isolated`。
-报告原始可达房间、关闭指定门后新增的孤立房间与剩余路线，保留原始几何和检测证据。
-门 ID 错误返回 2，新增孤立房间触发门禁返回 1；这不是疏散安全认证。

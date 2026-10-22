@@ -2,7 +2,11 @@
 
 **Connect rooms through supported doors. Keep windows and unknown gaps out of the route graph.**
 
+For developers reviewing room connectivity from supplied geometry and typed openings. Start here to ask which rooms become unreachable when a specific door closes.
+
 [中文](README.zh-CN.md) · [Releases](https://github.com/crown-sports/planportals/releases)
+
+[Choose a package and run one shared workflow](https://github.com/crown-sports/planportals/blob/main/docs/workflow.md) · [Evidence and product boundaries](docs/product.md)
 
 ![Generated plan, typed opening evidence, accepted room connections and actual route decisions](examples/demo.png)
 

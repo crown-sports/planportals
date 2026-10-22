@@ -1,9 +1,8 @@
 # Changelog
 
 ## 0.2.0 — 2026-10-22
-
+- Include the required `.gitignore` in source distributions and verify the unpacked archive in CI.
 - Preserve one-pass Python iterables of blocked openings, so closure scenarios cannot silently discard a generator of door IDs.
-
 - Add immutable door-closure scenarios to routing and an `access` report with baseline reachability, newly isolated rooms, remaining routes, and optional review-gate exit codes.
 
 ## 0.1.0 — 2026-10-09

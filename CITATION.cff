@@ -4,8 +4,8 @@ type: software
 title: "PlanPortals"
 authors:
   - name: "PlanPortals contributors"
-version: 0.1.0
-date-released: 2026-10-09
+version: 0.2.0
+date-released: 2026-10-22
 repository-code: "https://github.com/crown-sports/planportals"
 url: "https://github.com/crown-sports/planportals"
 license: MIT

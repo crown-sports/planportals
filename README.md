@@ -13,7 +13,7 @@ On this generated five-room plan, the actual engine admits **3 door connections*
 Python 3.10+. No GPU, model or cloud service required.
 
 ```bash
-python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.1.0"
+python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 planportals demo --output runs/demo
 ```
 
@@ -39,7 +39,7 @@ A route is a **sequence of rooms and opening IDs**. It is not a collision-free p
 
 ## Test temporary door closures
 
-Available from a source checkout; existing tagged releases do not include this command.
+Available in v0.2.0; install the release above to use this command.
 
 ```bash
 planportals access --graph runs/demo/portals.json --from-room bedroom \

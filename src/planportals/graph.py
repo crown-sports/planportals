@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from collections import deque
+from collections.abc import Iterable
 from dataclasses import replace
 
 from .domain import (
@@ -212,8 +213,14 @@ def _semantic_conflicts(
     return conflicts
 
 
-def _blocked_ids(graph: PortalGraph, values: tuple[str, ...]) -> frozenset[str]:
-    if isinstance(values, (str, bytes)) or any(not isinstance(value, str) for value in values):
+def _blocked_ids(graph: PortalGraph, values: Iterable[str]) -> frozenset[str]:
+    if isinstance(values, (str, bytes)):
+        raise ValueError("blocked openings must be a collection of opening IDs")
+    try:
+        values = tuple(values)
+    except TypeError as error:
+        raise ValueError("blocked openings must be a collection of opening IDs") from error
+    if any(not isinstance(value, str) for value in values):
         raise ValueError("blocked openings must be a collection of opening IDs")
     blocked = frozenset(values)
     unknown = blocked - {decision.candidate.id for decision in graph.decisions}
@@ -223,7 +230,7 @@ def _blocked_ids(graph: PortalGraph, values: tuple[str, ...]) -> frozenset[str]:
 
 
 def find_route(
-    graph: PortalGraph, from_room: str, to_room: str, *, blocked_opening_ids: tuple[str, ...] = ()
+    graph: PortalGraph, from_room: str, to_room: str, *, blocked_opening_ids: Iterable[str] = ()
 ) -> RouteResult:
     blocked = _blocked_ids(graph, blocked_opening_ids)
     room_ids = {room.id for room in graph.rooms}
@@ -264,7 +271,7 @@ def find_route(
 
 
 def analyze_access(
-    graph: PortalGraph, from_room: str, *, blocked_opening_ids: tuple[str, ...] = ()
+    graph: PortalGraph, from_room: str, *, blocked_opening_ids: Iterable[str] = ()
 ) -> dict:
     """Compare room reachability with the baseline while retaining original door evidence."""
     blocked = tuple(sorted(_blocked_ids(graph, blocked_opening_ids)))

@@ -97,3 +97,22 @@ def test_cli_writes_failed_gate_and_preserves_graph(tmp_path):
         )
         == 1
     )
+
+
+def test_single_pass_closure_iterables_preserve_blocked_doors():
+    original = graph()
+    expected = analyze_access(original, "bedroom", blocked_opening_ids=("door-living-kitchen",))
+    actual = analyze_access(original, "bedroom", blocked_opening_ids=iter(("door-living-kitchen",)))
+    assert actual == expected
+    assert actual["newly_isolated_room_ids"] == ["kitchen", "study"]
+    assert (
+        find_route(
+            original, "bedroom", "study", blocked_opening_ids=iter(("door-living-kitchen",))
+        ).status
+        == "no_path"
+    )
+    with pytest.raises(ValueError, match="unknown blocked"):
+        analyze_access(original, "bedroom", blocked_opening_ids=iter(("typo",)))
+    for invalid in (None, 1):
+        with pytest.raises(ValueError, match="collection"):
+            analyze_access(original, "bedroom", blocked_opening_ids=invalid)

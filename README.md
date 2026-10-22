@@ -37,6 +37,23 @@ Use your upstream model's original-resolution semantic label mask or typed openi
 
 A route is a **sequence of rooms and opening IDs**. It is not a collision-free path inside furnished rooms or a certified accessibility/evacuation assessment. Opening span width is a geometric observation, not independently verified usable door clearance.
 
+## Test temporary door closures
+
+Available from a source checkout; existing tagged releases do not include this command.
+
+```bash
+planportals access --graph runs/demo/portals.json --from-room bedroom \
+  --blocked-openings door-living-kitchen --output runs/access.json \
+  --fail-on-newly-isolated
+```
+
+Use opening IDs from your graph's decisions. `access` reports baseline reachability,
+rooms isolated by the supplied closures, and remaining room routes. Exit 1 means the
+requested review gate triggered; unknown IDs or invalid inputs exit 2. `route` also
+accepts `--blocked-openings` and optional `--fail-if-unreachable`. Closure scenarios
+leave geometry and detector evidence intact, and never turn windows or rejected
+candidates into doors. This is topological what-if analysis, not evacuation certification.
+
 ## Method and measured boundary
 
 Semantic components → wall support → two-sided room evidence → conservative connection decisions → graph search. Every decision remains inspectable. [Methods](docs/methods.md) · [Architecture](docs/architecture.md).

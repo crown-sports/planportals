@@ -212,7 +212,20 @@ def _semantic_conflicts(
     return conflicts
 
 
-def find_route(graph: PortalGraph, from_room: str, to_room: str) -> RouteResult:
+def _blocked_ids(graph: PortalGraph, values: tuple[str, ...]) -> frozenset[str]:
+    if isinstance(values, (str, bytes)) or any(not isinstance(value, str) for value in values):
+        raise ValueError("blocked openings must be a collection of opening IDs")
+    blocked = frozenset(values)
+    unknown = blocked - {decision.candidate.id for decision in graph.decisions}
+    if unknown:
+        raise ValueError(f"unknown blocked opening IDs: {', '.join(sorted(unknown))}")
+    return blocked
+
+
+def find_route(
+    graph: PortalGraph, from_room: str, to_room: str, *, blocked_opening_ids: tuple[str, ...] = ()
+) -> RouteResult:
+    blocked = _blocked_ids(graph, blocked_opening_ids)
     room_ids = {room.id for room in graph.rooms}
     if from_room not in room_ids or to_room not in room_ids:
         raise ValueError("route endpoints must be declared room IDs")
@@ -220,6 +233,8 @@ def find_route(graph: PortalGraph, from_room: str, to_room: str) -> RouteResult:
         return RouteResult("found", (from_room,), (), "same_room")
     connections: dict[str, list[tuple[str, str]]] = {room_id: [] for room_id in room_ids}
     for edge in graph.edges:
+        if edge.opening_id in blocked:
+            continue
         connections[edge.first].append((edge.second, edge.opening_id))
         connections[edge.second].append((edge.first, edge.opening_id))
     queue = deque([from_room])
@@ -246,3 +261,33 @@ def find_route(graph: PortalGraph, from_room: str, to_room: str) -> RouteResult:
                 )
             queue.append(neighbor)
     return RouteResult("no_path", (), (), "no_sequence_of_accepted_doors")
+
+
+def analyze_access(
+    graph: PortalGraph, from_room: str, *, blocked_opening_ids: tuple[str, ...] = ()
+) -> dict:
+    """Compare room reachability with the baseline while retaining original door evidence."""
+    blocked = tuple(sorted(_blocked_ids(graph, blocked_opening_ids)))
+    # Validate even an empty graph, before producing an apparently successful report.
+    find_route(graph, from_room, from_room, blocked_opening_ids=blocked)
+    routes = {
+        room.id: find_route(graph, from_room, room.id, blocked_opening_ids=blocked).to_dict()
+        for room in sorted(graph.rooms, key=lambda room: room.id)
+    }
+    baseline = {
+        room.id for room in graph.rooms if find_route(graph, from_room, room.id).status == "found"
+    }
+    reachable = {room_id for room_id, route in routes.items() if route["status"] == "found"}
+    return {
+        "schema_version": "planportals-access/1",
+        "from_room": from_room,
+        "blocked_opening_ids": list(blocked),
+        "baseline_reachable_room_ids": sorted(baseline),
+        "reachable_room_ids": sorted(reachable),
+        "unreachable_room_ids": sorted(set(routes) - reachable),
+        "newly_isolated_room_ids": sorted(baseline - reachable),
+        "routes": routes,
+        "meaning": (
+            "supplied closure scenario on accepted room connections; not an evacuation assessment"
+        ),
+    }

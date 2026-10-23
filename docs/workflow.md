@@ -19,18 +19,18 @@ If you only have an unlabelled scan, these packages do not supply a complete rec
 
 ## Run the shared example
 
-Python 3.10+. Clone the current main source for the walkthrough script; this new script is not in the existing v0.2.0 release assets. The four engine dependencies below are pinned to existing releases. No model weights are downloaded.
+Python 3.10+. The walkthrough script is included in v0.2.1. The four engine dependencies below are pinned to the patch releases with input-file protection. No model weights are downloaded.
 
 ```bash
-git clone https://github.com/crown-sports/planportals.git
+git clone --branch v0.2.1 https://github.com/crown-sports/planportals.git
 cd planportals
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install \
-  "git+https://github.com/crown-sports/wallgraph.git@v0.2.0" \
-  "git+https://github.com/crown-sports/planregions.git@v0.4.0" \
-  "git+https://github.com/crown-sports/planmetric.git@v0.2.0" \
-  "git+https://github.com/crown-sports/planportals.git@v0.2.0"
+  "git+https://github.com/crown-sports/wallgraph.git@v0.2.1" \
+  "git+https://github.com/crown-sports/planregions.git@v0.4.1" \
+  "git+https://github.com/crown-sports/planmetric.git@v0.2.1" \
+  "git+https://github.com/crown-sports/planportals.git@v0.2.1"
 python tools/review_workflow.py --output runs/review
 python tools/render_workflow.py --input runs/review --output runs/figures
 ```

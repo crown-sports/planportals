@@ -19,18 +19,18 @@
 
 ## 跑通一次
 
-需要 Python 3.10+。克隆当前 main 源码以获取示例脚本；这个新脚本不在已有 v0.2.0 发布资产中。四个计算库固定到已有发布版本。安装会下载依赖，不下载模型权重。
+需要 Python 3.10+。v0.2.1 已包含示例脚本，下面四个计算库固定到带输入文件保护的补丁版本。安装会下载依赖，不下载模型权重。
 
 ```bash
-git clone https://github.com/crown-sports/planportals.git
+git clone --branch v0.2.1 https://github.com/crown-sports/planportals.git
 cd planportals
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install \
-  "git+https://github.com/crown-sports/wallgraph.git@v0.2.0" \
-  "git+https://github.com/crown-sports/planregions.git@v0.4.0" \
-  "git+https://github.com/crown-sports/planmetric.git@v0.2.0" \
-  "git+https://github.com/crown-sports/planportals.git@v0.2.0"
+  "git+https://github.com/crown-sports/wallgraph.git@v0.2.1" \
+  "git+https://github.com/crown-sports/planregions.git@v0.4.1" \
+  "git+https://github.com/crown-sports/planmetric.git@v0.2.1" \
+  "git+https://github.com/crown-sports/planportals.git@v0.2.1"
 python tools/review_workflow.py --output runs/review
 python tools/render_workflow.py --input runs/review --output runs/figures
 ```

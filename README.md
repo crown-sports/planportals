@@ -2,7 +2,7 @@
 
 Connect rooms through doors, then check which rooms become unreachable when a door closes.
 
-[中文](README.zh-CN.md) · [v0.2.0](https://github.com/crown-sports/planportals/releases/tag/v0.2.0)
+[中文](README.zh-CN.md) · [v0.2.1](https://github.com/crown-sports/planportals/releases/tag/v0.2.1)
 
 ![Room connections before and after closing the living-kitchen door; kitchen and study become isolated](examples/workflow.png)
 
@@ -13,7 +13,7 @@ Generated example: closing the living–kitchen door cuts access from the bedroo
 Python 3.10+. No GPU, model or cloud service required.
 
 ```bash
-python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.0"
+python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.1"
 planportals demo --output runs/demo
 planportals access --graph runs/demo/portals.json --from-room bedroom \
   --blocked-openings door-living-kitchen --output runs/access.json \

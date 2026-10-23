@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1 — 2026-10-23 (prerelease)
 
 - Report empty or corrupt label archives as input errors with exit code 2.
 

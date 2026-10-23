@@ -6,6 +6,7 @@ import argparse
 import json
 from dataclasses import replace
 from pathlib import Path
+from zipfile import BadZipFile
 
 from PIL import Image
 
@@ -19,6 +20,20 @@ from .demo import demo_scene
 from .domain import COORDINATES, GraphConfig, SceneInput
 from .graph import analyze_access, build_graph, find_route
 from .io import read_graph, read_json, read_labelmap, read_scene, save_graph, write_json
+
+
+def _protect_inputs(output: Path, names: tuple[str, ...], sources: tuple[Path | None, ...]) -> None:
+    for name in names:
+        target = output / name
+        for source in sources:
+            if source is not None and (
+                target.resolve() == source.resolve()
+                or (target.exists() and source.exists() and target.samefile(source))
+            ):
+                raise ValueError(
+                    f"output {target} would overwrite input {source}; "
+                    "choose a different --output directory"
+                )
 
 
 def _classes(text: str) -> tuple[int, ...]:
@@ -91,6 +106,11 @@ def _upstream_scene(args) -> SceneInput:
 
 
 def _run_build(args) -> dict:
+    _protect_inputs(
+        args.output,
+        ("portals.json", "portals.svg"),
+        (args.input, args.wallgraph, args.planregions, args.room_labels, args.opening_mask),
+    )
     if args.input:
         if args.planregions or args.room_labels:
             raise ValueError("--planregions/--room-labels are only used with --wallgraph")
@@ -179,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
         ):
             return 1
         return 0
-    except (ValueError, OSError, KeyError, TypeError) as error:
+    except (ValueError, OSError, KeyError, TypeError, EOFError, BadZipFile) as error:
         arguments.exit(2, f"planportals: {error}\n")
 
 

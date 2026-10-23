@@ -2,7 +2,7 @@
 
 按门连接房间，再检查关掉一扇门后，哪些房间到不了了。
 
-[English](README.md) · [v0.2.0](https://github.com/crown-sports/planportals/releases/tag/v0.2.0)
+[English](README.md) · [v0.2.1](https://github.com/crown-sports/planportals/releases/tag/v0.2.1)
 
 ![关闭客厅与厨房之间的门后，厨房和书房变为不可达；卫生间前后均为灰色](examples/workflow.png)
 
@@ -13,12 +13,14 @@
 Python 3.10+，不需要 GPU、模型或云服务。
 
 ```bash
-python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.0"
+python -m pip install "git+https://github.com/crown-sports/planportals.git@v0.2.1"
 planportals demo --output runs/demo
 planportals access --graph runs/demo/portals.json --from-room bedroom \
   --blocked-openings door-living-kitchen --output runs/access.json \
   --fail-on-newly-isolated
 ```
+
+原始输入与结果请分开放；重复使用同一个输出目录，会替换其中生成的结果文件。
 
 demo 提供五个房间和带类别的开口。打开 `runs/demo/portals.svg`，查看 **3 条被接受的门连接**。封门命令先写出 `access.json`，因新增两个不可达房间而退出 **1**，原始图和几何不会改变。
 

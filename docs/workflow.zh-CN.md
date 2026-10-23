@@ -2,7 +2,7 @@
 
 [English](workflow.md) · [返回 PlanPortals](../README.zh-CN.md)
 
-**要做的决策：** 接受一份图纸解释前，检查房间面积是否有尺寸依据、修改是否合并了房间，以及临时关门会隔离哪些房间。本例复用 PlanPortals 已有的生成户型；墙体边界、六条尺寸和门窗类别均为提供的标注，不涉及真实图纸、OCR 或识别模型。
+这个例子把同一张生成户型依次交给四个库：提取墙线、测量房间、移除一段隔墙，再关掉一扇门。墙体边界、六条尺寸和门窗类别均为提供的标注，不涉及真实图纸、OCR 或识别模型。
 
 ## 从哪个库开始
 
@@ -32,9 +32,12 @@ python -m pip install \
   "git+https://github.com/crown-sports/planmetric.git@v0.2.0" \
   "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 python tools/review_workflow.py --output runs/review
+python tools/render_workflow.py --input runs/review --output runs/figures
 ```
 
 Windows 使用 `.venv\Scripts\activate` 激活。安装后本地运行。输出目录必须是新目录；重复使用旧目录返回错误，避免覆盖上次复核结果。
+
+打开 `runs/figures` 中的四张 PNG，即可查看首页图示。绘图脚本读取实际导出结果，`figures.json` 记录输入和图片的哈希；绘图输出目录也必须是新目录。
 
 预期 `summary.json`：**5 个区域**、横纵均 **10 毫米/像素**、**3 条有效门连接**。客厅按实例像素计数、扣除墙体像素后得到 **14.3221 平方米**。刻意删除一段分隔墙后，区域 **5 → 4**，出现 **1 个合并组**。从卧室（区域 `3`）出发，关闭 `door-living-kitchen` 后新隔离的是 **厨房和书房**；浴室原本不可达，不计入“新增隔离”。
 
@@ -79,4 +82,4 @@ planportals access --graph runs/review/portals/portals.json --from-room 3 \
 
 用已复核的二值掩码替代生成墙体；用 OCR/人工复核结果替代尺寸观测；用带类别的检测结果替代开口标注。它们必须使用**同一原图坐标**，保留来源与拒绝记录。脚本是可检查的集成示例，不是任意图纸的批量导入器。
 
-区域变化不自动等于识别错误；尺寸共识不能证明全部尺寸真实；房间路线也不等于避障路径或疏散认证。下一步应积累有许可、可复现的代表性图纸与修正记录，再评估准确率和节省工时。各库 `docs/product.md` 列出当前实现证据、已知边界和优先事项。
+区域变化不自动等于识别错误；尺寸共识不能证明全部尺寸真实；房间路线也不等于避障路径或疏散认证。各库 `docs/product.md` 说明几何处理方式，并链接对应实现。

@@ -1,15 +1,11 @@
-# Where PlanPortals fits
+# Room connections and closures
 
-**User and decision:** a developer has room/wall geometry and typed opening candidates and wants to inspect connections or the consequence of closing a door. The [shared walkthrough](workflow.md) shows where to start among all four packages and produces measurements, a structural-change report and closure results from one generated apartment.
+[README](../README.md) · [中文](../README.zh-CN.md)
 
-| Current, checkable value | Evidence | Boundary |
-| --- | --- | --- |
-| Retain wall support and two-sided room evidence for every candidate | [`geometry.py`](../src/planportals/geometry.py), [`graph.py`](../src/planportals/graph.py), [`test_portals_graph.py`](../tests/test_portals_graph.py) | Wrong upstream semantics can admit a false door |
-| Keep windows, unknown gaps and ambiguous candidates out of routes | [`test_portals_graph.py`](../tests/test_portals_graph.py), [generated evaluation](validation.md) | No trained detector or inferred door semantics is supplied |
-| Rebuild serialized decisions before routing; compare closures to baseline | [`io.py`](../src/planportals/io.py), [`test_access.py`](../tests/test_access.py) | Rooms already unreachable are not newly isolated; routes are room sequences only |
+The graph starts with room polygons, wall segments and typed opening candidates. A connection requires a door label, wall support and consistent room membership on both sides. Windows, unknown gaps and ambiguous candidates retain their decisions but do not become edges. [Geometry](../src/planportals/geometry.py) · [Graph construction](../src/planportals/graph.py) · [Tests](../tests/test_portals_graph.py).
 
-A hand-written graph or [NetworkX shortest path](https://networkx.org/documentation/stable/reference/algorithms/shortest_paths.html) is sufficient if your edges are already trusted. PlanPortals addresses the preceding question: which supplied opening has enough geometric and semantic evidence to become an edge, and why? Its graph search is not a new routing algorithm. General vision models remain possible candidate providers; their proposed door class must still be reviewed. No certified accessibility, fire-safety or obstacle-free navigation result is produced.
+`access` compares reachability before and after removing the specified door edges. Rooms that were already unreachable are separate from newly isolated rooms. The serialized graph is checked before routing; a stored traversable flag alone is not trusted. [Input checks](../src/planportals/io.py) · [Closure tests](../tests/test_access.py).
 
-[Validation](validation.md) uses generated candidates, including deliberately wrong semantics. It demonstrates decision behavior, not image recognition accuracy or user time saved. For the walkthrough, annotations are provided explicitly and the two changes—missing separator and temporary closure—remain separate.
+The README figure reads the actual labels, accepted edges and access report from the [shared generated example](workflow.md). Both panels keep the same geometry. The red mark is the blocked opening, green is reachable from the start, salmon is newly isolated and gray was unreachable beforehand. The line inside kitchen/study remains because those rooms are still connected to each other.
 
-**Next priorities:** collect permissioned opening-association failures and reviewer corrections; then validate false connections and route changes on held-out real plans. An evidence and correction corpus could accumulate useful domain knowledge. The current public algorithms and contracts are reproducible engineering, not evidence of an established proprietary moat or product-market fit.
+A hand-written graph is enough when its edges are already trusted. Here the extra work is deciding which supplied opening can become an edge and keeping the rejected reasons. Graph lines are room adjacency, not obstacle-free routes. An incorrect upstream door label can still create a false connection; the [generated cases](validation.md) include that failure. No detector, usable-clearance certification or evacuation assessment is supplied.

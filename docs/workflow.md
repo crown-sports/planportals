@@ -2,7 +2,7 @@
 
 [中文](workflow.zh-CN.md) · [Back to PlanPortals](../README.md)
 
-**Decision:** before accepting a drawing interpretation, inspect its measurable room areas, find a structural change, and see which rooms a door closure isolates. This local example reuses PlanPortals' generated apartment. Wall barriers, six dimensions and opening classes are supplied annotations; no OCR, recognition model, network inference or real drawing is involved.
+This example runs the four packages on one generated apartment: extract wall paths, measure rooms, remove a separator and close a door. Wall barriers, six dimensions and opening classes are supplied annotations; no OCR, recognition model, network inference or real drawing is involved.
 
 ## Choose a starting point
 
@@ -32,9 +32,12 @@ python -m pip install \
   "git+https://github.com/crown-sports/planmetric.git@v0.2.0" \
   "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 python tools/review_workflow.py --output runs/review
+python tools/render_workflow.py --input runs/review --output runs/figures
 ```
 
 On Windows activate with `.venv\Scripts\activate`. After installation, execution is local. Use a fresh output directory: the script rejects an existing destination instead of replacing a prior review.
+
+Open the four PNGs in `runs/figures` to see the README illustrations. The renderer reads the exported results; `figures.json` records the input and image hashes. Its output directory must also be new.
 
 Expected `summary.json`: **5 regions**, **10 mm/px on each axis**, **3 accepted door connections**. The living region measures **14.3221 m²**, using its exact labelled pixels with wall pixels excluded. Removing one separator section changes **5 regions to 4**, with **1 merge group**. Blocking `door-living-kitchen` from bedroom (region `3`) newly isolates **kitchen and study**; bathroom was already unreachable and is not counted as newly isolated.
 
@@ -79,4 +82,4 @@ The combined script also supports `--fail-on-newly-isolated` (exit 1 after writi
 
 Replace the synthetic barriers with a reviewed binary mask, dimension observations with your OCR/review output, and opening classes with your typed detections. Keep all four in the **same original image grid**. Preserve input provenance and review rejected evidence. The script is an inspectable integration example, not a batch importer for arbitrary drawings.
 
-A changed region is not automatically an error; consensus does not establish that the dimensions are true; a room route is not a collision-free or certified evacuation route. Prioritize representative, permissioned drawings and correction records before making accuracy or time-saving claims. See the four packages' `docs/product.md` for code, tests, measured limits and development priorities.
+A changed region is not automatically an error; consensus does not establish that the dimensions are true; a room route is not a collision-free or certified evacuation route. Each package's `docs/product.md` explains its geometry and links to the relevant implementation.

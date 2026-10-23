@@ -32,9 +32,12 @@ python -m pip install \
   "git+https://github.com/crown-sports/planmetric.git@v0.2.0" \
   "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 python tools/review_workflow.py --output runs/review
+python tools/render_workflow.py --input runs/review --output runs/figures
 ```
 
 Windows 使用 `.venv\Scripts\activate` 激活。安装后本地运行。输出目录必须是新目录；重复使用旧目录返回错误，避免覆盖上次复核结果。
+
+打开 `runs/figures` 中的四张 PNG，即可查看首页图示。绘图脚本读取实际导出结果，`figures.json` 记录输入和图片的哈希；绘图输出目录也必须是新目录。
 
 预期 `summary.json`：**5 个区域**、横纵均 **10 毫米/像素**、**3 条有效门连接**。客厅按实例像素计数、扣除墙体像素后得到 **14.3221 平方米**。刻意删除一段分隔墙后，区域 **5 → 4**，出现 **1 个合并组**。从卧室（区域 `3`）出发，关闭 `door-living-kitchen` 后新隔离的是 **厨房和书房**；浴室原本不可达，不计入“新增隔离”。
 

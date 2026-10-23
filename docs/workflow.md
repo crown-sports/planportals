@@ -32,9 +32,12 @@ python -m pip install \
   "git+https://github.com/crown-sports/planmetric.git@v0.2.0" \
   "git+https://github.com/crown-sports/planportals.git@v0.2.0"
 python tools/review_workflow.py --output runs/review
+python tools/render_workflow.py --input runs/review --output runs/figures
 ```
 
 On Windows activate with `.venv\Scripts\activate`. After installation, execution is local. Use a fresh output directory: the script rejects an existing destination instead of replacing a prior review.
+
+Open the four PNGs in `runs/figures` to see the README illustrations. The renderer reads the exported results; `figures.json` records the input and image hashes. Its output directory must also be new.
 
 Expected `summary.json`: **5 regions**, **10 mm/px on each axis**, **3 accepted door connections**. The living region measures **14.3221 m²**, using its exact labelled pixels with wall pixels excluded. Removing one separator section changes **5 regions to 4**, with **1 merge group**. Blocking `door-living-kitchen` from bedroom (region `3`) newly isolates **kitchen and study**; bathroom was already unreachable and is not counted as newly isolated.
 

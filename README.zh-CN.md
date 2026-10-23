@@ -20,6 +20,8 @@ planportals access --graph runs/demo/portals.json --from-room bedroom \
   --fail-on-newly-isolated
 ```
 
+原始输入与结果请分开放；重复使用同一个输出目录，会替换其中生成的结果文件。
+
 demo 提供五个房间和带类别的开口。打开 `runs/demo/portals.svg`，查看 **3 条被接受的门连接**。封门命令先写出 `access.json`，因新增两个不可达房间而退出 **1**，原始图和几何不会改变。
 
 门 ID 从图的 decisions 中读取；ID 错误或输入不合法时退出 **2**。`route` 也支持 `--blocked-openings` 和 `--fail-if-unreachable`。

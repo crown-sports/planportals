@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Report empty or corrupt label archives as input errors with exit code 2.
+
+- Refuse build outputs that would overwrite scene or upstream inputs, including hard links and symlinks.
+
 ## 0.2.0 — 2026-10-22
 - Include the required `.gitignore` in source distributions and verify the unpacked archive in CI.
 - Preserve one-pass Python iterables of blocked openings, so closure scenarios cannot silently discard a generator of door IDs.

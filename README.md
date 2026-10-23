@@ -20,6 +20,8 @@ planportals access --graph runs/demo/portals.json --from-room bedroom \
   --fail-on-newly-isolated
 ```
 
+Keep original inputs in a separate folder. Reusing an output folder replaces its generated result files.
+
 The demo supplies five rooms and typed openings. Open `runs/demo/portals.svg` to see the **3 accepted door connections**. The closure command writes `access.json`, then exits **1** because two rooms become newly isolated. It leaves the graph and geometry unchanged.
 
 Use IDs from your graph's decisions. Unknown IDs or invalid inputs exit **2**. `route` also accepts `--blocked-openings` and `--fail-if-unreachable`.
